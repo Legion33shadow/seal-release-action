@@ -48,6 +48,9 @@ python3 verify_seal.py FILE.seal-N.json --file FILE      # RESULTAT: VALIDE, or 
 ```
 The action also verifies each receipt on the runner with the bundled `verify_seal.py` (byte-identical to the live
 verifier) and the pinned registry key, when Python `cryptography` is installed; otherwise the check is reported as skipped.
+Measured on 2026-10-22: `cryptography` 41.0.7 is present on GitHub-hosted `ubuntu-24.04` (image 20261012.334.1), and the
+in-action check returned `RESULTAT: VALIDE` ([run](https://github.com/Legion33shadow/legion-seal/actions/runs/39789204100)).
+Other images may differ.
 
 ## Limits (measured from the registry rules)
 - 6 submissions per minute and 100 per day per IP; shared GitHub-hosted runners share IPs. The action retries after a 429.
