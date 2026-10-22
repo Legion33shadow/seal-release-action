@@ -1,0 +1,50 @@
+name: "LEGION SEAL release"
+description: "Seal the SHA-256 of release artifacts in the public LEGION SEAL log (hash only, no token) and add a badge to the job summary."
+author: "Legion33shadow"
+branding:
+  icon: "hash"
+  color: "blue"
+inputs:
+  files:
+    description: "Glob patterns of the artifacts to seal (space, comma or newline separated), e.g. 'dist/*'. Only their SHA-256 is sent."
+    required: true
+  label-prefix:
+    description: "Prefix of the public label 'build <owner/repo>@<commit7>'."
+    required: false
+    default: "build"
+  receipts-dir:
+    description: "Directory where the JSON receipts are written (upload them as a workflow or release artifact)."
+    required: false
+    default: "seal-receipts"
+  fail-on-error:
+    description: "'true' fails the step if an artifact cannot be sealed or verified; default only warns."
+    required: false
+    default: "false"
+  base-url:
+    description: "Registry URL."
+    required: false
+    default: "https://seal.legion-api.com"
+  test:
+    description: "'true' sends X-Legion-Test: the seal is real but excluded from the registry's adoption counters and feed."
+    required: false
+    default: "false"
+outputs:
+  receipts:
+    description: "JSON list of {file, sha256, leaf_index, proof_url, receipt, badge, duplicate, verified, observed_at}."
+    value: ${{ steps.seal.outputs.receipts }}
+  badge:
+    description: "README badge Markdown for the first artifact."
+    value: ${{ steps.seal.outputs.badge }}
+runs:
+  using: "composite"
+  steps:
+    - id: seal
+      shell: bash
+      env:
+        INPUT_FILES: ${{ inputs.files }}
+        INPUT_LABEL_PREFIX: ${{ inputs.label-prefix }}
+        INPUT_RECEIPTS_DIR: ${{ inputs.receipts-dir }}
+        INPUT_FAIL_ON_ERROR: ${{ inputs.fail-on-error }}
+        INPUT_BASE_URL: ${{ inputs.base-url }}
+        INPUT_TEST: ${{ inputs.test }}
+      run: python3 "${{ github.action_path }}/seal_release.py"
