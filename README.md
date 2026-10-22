@@ -51,8 +51,9 @@ verifier) and the pinned registry key, when Python `cryptography` is installed; 
 
 ## Limits (measured from the registry rules)
 - 6 submissions per minute and 100 per day per IP; shared GitHub-hosted runners share IPs. The action retries after a 429.
-- While the log has fewer than 1000 entries (Genesis), at most 3 Genesis entries per IP: a shared runner IP can be refused.
-  The step then warns (or fails with `fail-on-error: true`); your build is not affected.
+- A seal is never refused for a Genesis quota (registry rules v1). A build receipt needs no Genesis number: past the
+  first 1000 leaves, receipts simply carry `in_genesis: false`, and the action treats that as a normal success.
+- If the registry is unreachable or rate-limits you after retries, the step warns (or fails with `fail-on-error: true`).
 - The same SHA-256 sealed twice returns the first entry.
 - Prototype service; it can be withdrawn (rules §6).
 
